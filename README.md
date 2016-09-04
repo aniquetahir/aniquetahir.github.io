@@ -1,2 +1,2 @@
 # aniquetahir.github.io
-Frontend for github
+Frontend for github projects

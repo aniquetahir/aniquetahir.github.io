@@ -23,7 +23,7 @@ Well hello there! 👋
 
 I am a PhD student at [Arizona State University](https://asu.edu) under the supervision of [Dr. Huan Liu](https://www.public.asu.edu/~huanliu/). 
 My work revolves around the intersection of Machine Learning, Data Mining and Social Science. My research draws inspiration
-from generalization and distributional shifts. I am also interested in community structures. 
+from models tackling generalization and distributional shifts. I am also interested in community structures. 
 
 Prior to this, my Masters work revolved around Geospatial Big Data at ASU's [DataSys](https://datasystemslab.engineering.asu.edu/) Lab.
 My Masters thesis proposes an Explanation Framework for Mobility Datasets.

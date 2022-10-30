@@ -17,6 +17,9 @@ profile:
 news: true  # includes a list of news items
 selected_papers: true # includes a list of papers marked as "selected={true}"
 social: true  # includes social icons at the bottom of the page
+scholar:
+  sort_by: year
+  order: ascending  # can be either "ascending" or "descending"
 ---
 
 Well hello there! 👋

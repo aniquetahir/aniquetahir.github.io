@@ -3,6 +3,8 @@ layout: distill
 title: understanding jax's scan function
 description: jax.lax.scan is a function which allows jit-able loops
 date: 2022-09-05
+giscus_comments: true
+related_posts: true
 
 authors:
   - name: Anique Tahir

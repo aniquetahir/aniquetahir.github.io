@@ -1,5 +1,42 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://anique.ml/feed.xml" rel="self" type="application/atom+xml" /><link href="https://anique.ml/" rel="alternate" type="text/html" hreflang="en" /><updated>2023-07-27T13:00:13+00:00</updated><id>https://anique.ml/feed.xml</id><title type="html">blank</title><subtitle>Anique&apos;s Website.
-</subtitle><entry><title type="html">a post with giscus comments</title><link href="https://anique.ml/blog/2022/giscus-comments/" rel="alternate" type="text/html" title="a post with giscus comments" /><published>2022-12-10T15:59:00+00:00</published><updated>2022-12-10T15:59:00+00:00</updated><id>https://anique.ml/blog/2022/giscus-comments</id><content type="html" xml:base="https://anique.ml/blog/2022/giscus-comments/"><![CDATA[<p>This post shows how to add GISCUS comments.</p>]]></content><author><name></name></author><category term="sample-posts" /><category term="external-services" /><summary type="html"><![CDATA[an example of a blog post with giscus comments]]></summary></entry><entry><title type="html">understanding jax’s scan function</title><link href="https://anique.ml/blog/2022/understanding_scan/" rel="alternate" type="text/html" title="understanding jax’s scan function" /><published>2022-09-05T00:00:00+00:00</published><updated>2022-09-05T00:00:00+00:00</updated><id>https://anique.ml/blog/2022/understanding_scan</id><content type="html" xml:base="https://anique.ml/blog/2022/understanding_scan/"><![CDATA[<h2 id="why-use-jaxlaxscan">Why use <code class="language-plaintext highlighter-rouge">jax.lax.scan</code></h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://anique.ml/feed.xml" rel="self" type="application/atom+xml" /><link href="https://anique.ml/" rel="alternate" type="text/html" hreflang="en" /><updated>2023-07-27T13:03:02+00:00</updated><id>https://anique.ml/feed.xml</id><title type="html">blank</title><subtitle>Anique&apos;s Website.
+</subtitle><entry><title type="html">training large language models using distributed resources</title><link href="https://anique.ml/blog/2023/distributed_llms/" rel="alternate" type="text/html" title="training large language models using distributed resources" /><published>2023-07-27T00:00:00+00:00</published><updated>2023-07-27T00:00:00+00:00</updated><id>https://anique.ml/blog/2023/distributed_llms</id><content type="html" xml:base="https://anique.ml/blog/2023/distributed_llms/"><![CDATA[<h2 id="why-do-we-need-distributed-training">Why do we need Distributed Training?</h2>
+<p>Large language models such as OpenAI’s ChatGPT and Meta’s Llama have gained popularity due to their usefulness. One of the major criticism of ChatGPT is that it’s training parameters are ironically closed source. However, Meta’s Llama models provide an Open Source alternative albeit being behind in quality. The NLP community has leveraged Llama to create variations which are intended to improve on the original model. Some improvements include uncensoring the model so that it is capable of responding in an unmoderated manner or finetuning it to provide better responses to instruct prompts. The possibilities of using open source LLMs are limitless. One simple application is to fine-tune Llama on a specific dataset. However, due to the size of the model, some of the larger versions may not fit on a single GPU. Hence, it is vital to learn how to train these models over a number of GPUs (multi-gpu) or a number of nodes each consisting of several GPUs (multi-node).</p>
+
+<h2 id="basics-of-distributed-training">Basics of Distributed Training</h2>
+<p>In this post, I will focus on distributed training over a single node containing multiple GPUs. One does not need to train models on a GPU. In fact, if one were interested in using the cloud, TPUs are a promising alternative. However, TPUs are not sold to the public and I am a promoted of doing things on hardware which one has physical access to. Thus, I will focus on training on NVidia GPUs (the other alternative, AMD, does not have good support for machine learning as per current date). This post will be hands-on with code examples you can run.</p>
+
+<p>The first step is to check whether your rig has multiple GPUs and how they are linked together. The following command will return the status of the GPUs including the memory consumption and the processing power being consumed. It is handy to run this utility during training to get an idea of the resources being consumed (or not being consumed). In case the processing power is not 100%, it is indicative of a bottleneck in the training script which needs to be fixed.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nvidia-smi
+</code></pre></div></div>
+
+<p>Next, the following command helps to see how the GPUs are linked together:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nvidia-smi topo -m
+</code></pre></div></div>
+<p>Output:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	GPU0	GPU1	CPU Affinity	NUMA Affinity	GPU NUMA ID
+GPU0	 X 	PHB	0-11		N/A		N/A
+GPU1	PHB	 X 	0-11		N/A		N/A
+
+Legend:
+
+  X    = Self
+  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)
+  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node
+  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)
+  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)
+  PIX  = Connection traversing at most a single PCIe bridge
+  NV#  = Connection traversing a bonded set of # NVLinks
+</code></pre></div></div>
+
+<p>NVidia cards allow being linked together using NVlink cables. This helps cross-GPU communication. However, as visible from the output, the cards need not be linked in such a way. Even if the GPUs are connected to seperate PCI ports on the same node. They can still communicate. However, cross-GPU communication will be slower. When designing a model for distributed training, the topology of the resources needs to be taken into consideration.</p>
+
+<p>There are multiple ways to parallelize a model e.g. Data Parallelism, Pipeline Parallelism, etc. There are pros and cons of each strategy and they can be mixed together.</p>
+
+<h2 id="limitations-of-current-implementations">Limitations of current implementations</h2>
+
+<hr />
+<p>To be continued
+(This post is a Work in Progress)</p>]]></content><author><name>Anique Tahir</name></author><summary type="html"><![CDATA[With the increasing popularity of large language models, it becomes increasingly important to use all available resources to gain an edge in training.]]></summary></entry><entry><title type="html">a post with giscus comments</title><link href="https://anique.ml/blog/2022/giscus-comments/" rel="alternate" type="text/html" title="a post with giscus comments" /><published>2022-12-10T15:59:00+00:00</published><updated>2022-12-10T15:59:00+00:00</updated><id>https://anique.ml/blog/2022/giscus-comments</id><content type="html" xml:base="https://anique.ml/blog/2022/giscus-comments/"><![CDATA[<p>This post shows how to add GISCUS comments.</p>]]></content><author><name></name></author><category term="sample-posts" /><category term="external-services" /><summary type="html"><![CDATA[an example of a blog post with giscus comments]]></summary></entry><entry><title type="html">understanding jax’s scan function</title><link href="https://anique.ml/blog/2022/understanding_scan/" rel="alternate" type="text/html" title="understanding jax’s scan function" /><published>2022-09-05T00:00:00+00:00</published><updated>2022-09-05T00:00:00+00:00</updated><id>https://anique.ml/blog/2022/understanding_scan</id><content type="html" xml:base="https://anique.ml/blog/2022/understanding_scan/"><![CDATA[<h2 id="why-use-jaxlaxscan">Why use <code class="language-plaintext highlighter-rouge">jax.lax.scan</code></h2>
 
 <p>Jax is a neural network library used mostly by Google. Jax converts all your implementation into a graph which is executed
 on your CPU, GPU or TPU. There are two main advantages of using Jax for your implementation:</p>

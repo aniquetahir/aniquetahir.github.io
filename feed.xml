@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://anique.ml/feed.xml" rel="self" type="application/atom+xml" /><link href="https://anique.ml/" rel="alternate" type="text/html" hreflang="en" /><updated>2023-08-06T02:30:31+00:00</updated><id>https://anique.ml/feed.xml</id><title type="html">blank</title><subtitle>Anique&apos;s Website.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://anique.ml/feed.xml" rel="self" type="application/atom+xml" /><link href="https://anique.ml/" rel="alternate" type="text/html" hreflang="en" /><updated>2023-08-06T03:56:03+00:00</updated><id>https://anique.ml/feed.xml</id><title type="html">blank</title><subtitle>Anique&apos;s Website.
 </subtitle><entry><title type="html">training large language models using distributed resources</title><link href="https://anique.ml/blog/2023/distributed_llms/" rel="alternate" type="text/html" title="training large language models using distributed resources" /><published>2023-07-27T00:00:00+00:00</published><updated>2023-07-27T00:00:00+00:00</updated><id>https://anique.ml/blog/2023/distributed_llms</id><content type="html" xml:base="https://anique.ml/blog/2023/distributed_llms/"><![CDATA[<h2 id="why-do-we-need-distributed-training">Why do we need Distributed Training?</h2>
 <p>Large language models such as OpenAI’s ChatGPT and Meta’s Llama have gained popularity due to their usefulness. One of the major criticism of ChatGPT is that it’s training parameters are ironically closed source. However, Meta’s Llama models provide an Open Source alternative albeit being behind in quality. The NLP community has leveraged Llama to create variations which are intended to improve on the original model. Some improvements include uncensoring the model so that it is capable of responding in an unmoderated manner or finetuning it to provide better responses to instruct prompts. The possibilities of using open source LLMs are limitless. One simple application is to fine-tune Llama on a specific dataset. However, due to the size of the model, some of the larger versions may not fit on a single GPU. Hence, it is vital to learn how to train these models over a number of GPUs (multi-gpu) or a number of nodes each consisting of several GPUs (multi-node).</p>
 
@@ -80,7 +80,45 @@ The second argument is some <code class="language-plaintext highlighter-rouge">p
 </code></pre></div></div>
 <p>Here <code class="language-plaintext highlighter-rouge">x</code> is the carry argument which is initialized to <code class="language-plaintext highlighter-rouge">0</code>. <code class="language-plaintext highlighter-rouge">y</code> is each element of the array <code class="language-plaintext highlighter-rouge">[1, 2, 3]</code> passed sequentially to the function. In the first pass <code class="language-plaintext highlighter-rouge">x</code> is <code class="language-plaintext highlighter-rouge">0</code> and <code class="language-plaintext highlighter-rouge">y</code> is 1. The return value is <code class="language-plaintext highlighter-rouge">(x+y, y+2,) = (0+1,  1+2,) = (1, 3,)</code>. For the next iteration, <code class="language-plaintext highlighter-rouge">x</code> is <code class="language-plaintext highlighter-rouge">1</code>, since <code class="language-plaintext highlighter-rouge">1</code> is the value of the carry returned in the last iteration and <code class="language-plaintext highlighter-rouge">y</code> is <code class="language-plaintext highlighter-rouge">2</code>, since <code class="language-plaintext highlighter-rouge">2</code> is the next value in the input array. Thus, <code class="language-plaintext highlighter-rouge">(x+y, y+2,) = (1+2,  2+2,) = (3, 4,)</code>. In the next iteration, the final value of the carry is <code class="language-plaintext highlighter-rouge">6</code>, while the final <code class="language-plaintext highlighter-rouge">y+2</code> is <code class="language-plaintext highlighter-rouge">5</code>. Thus, the <code class="language-plaintext highlighter-rouge">scan</code> function returns <code class="language-plaintext highlighter-rouge">6</code>(the carry) and <code class="language-plaintext highlighter-rouge">[3, 4, 5]</code>(all the <code class="language-plaintext highlighter-rouge">y+2</code> concatenated)</p>
 
-<p>Here we used a simple example, but the scan function can be used over more complicated arguments, such as the training loop of a neural network. This makes it possible to jit compile the entire training process, resulting in a large gain in training speed.</p>]]></content><author><name>Anique Tahir</name></author><summary type="html"><![CDATA[jax.lax.scan is a function which allows jit-able loops]]></summary></entry><entry><title type="html">New Blog</title><link href="https://anique.ml/blog/2022/website/" rel="alternate" type="text/html" title="New Blog" /><published>2022-08-06T00:00:00+00:00</published><updated>2022-08-06T00:00:00+00:00</updated><id>https://anique.ml/blog/2022/website</id><content type="html" xml:base="https://anique.ml/blog/2022/website/"><![CDATA[<p>Since my focus has shifted, I have decided to put down the old website. The old blog mainly consisted of 
+<p>Here we used a simple example, but the scan function can be used over more complicated arguments, such as the training loop of a neural network. This makes it possible to jit compile the entire training process, resulting in a large gain in training speed.</p>
+
+<h2 id="useful-notes-on-scan-behaviour">Useful notes on scan behaviour</h2>
+<p>In jax, it is common to use <code class="language-plaintext highlighter-rouge">NamedTuple</code>s to store various things such as model parameters. The third argument of scan can be used to iterate over the batch dimension of elements in the <code class="language-plaintext highlighter-rouge">NamedTuple</code>. Here is an example. Consider a transformer decoder with 32 blocks (Llama). Parameter values may be saved in a single <code class="language-plaintext highlighter-rouge">NamedTuple</code> as follows:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DecoderBlock(
+  input_norm=(32, 4096),
+  attention=Attention(
+    q_proj=(32, 4096, 1, 32, 128),
+    k_proj=(32, 4096, 32, 128),
+    v_proj=(32, 4096, 32, 128),
+    out_proj=(32, 1, 32, 128, 4096)
+  ),
+  post_attn_norm=(32, 4096), gate_proj=(32, 4096, 11008),
+  up_proj=(32, 4096, 11008), down_proj=(32, 11008, 4096)
+)
+</code></pre></div></div>
+
+<p>The following function can be used to make in inference for each 32 subsections of the <code class="language-plaintext highlighter-rouge">DecoderBlock</code>:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">input_</span><span class="p">):</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">seq</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">subkey</span> <span class="o">=</span> <span class="nf">split_key_nullable</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">seq</span> <span class="o">=</span> <span class="nf">decoder_block</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="n">seq</span><span class="p">,</span> <span class="n">attn_mask</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">subkey</span><span class="p">,</span> <span class="n">model_config</span><span class="o">=</span><span class="n">model_config</span><span class="p">)</span>
+        <span class="nf">return </span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">seq</span><span class="p">),</span> <span class="bp">None</span>
+    <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">seq</span><span class="p">),</span> <span class="n">_</span> <span class="o">=</span> <span class="n">jax</span><span class="p">.</span><span class="n">lax</span><span class="p">.</span><span class="nf">scan</span><span class="p">(</span><span class="n">inner</span><span class="p">,</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">seq</span><span class="p">),</span> <span class="n">params</span><span class="p">)</span>
+</code></pre></div></div>
+<p>Inside the <code class="language-plaintext highlighter-rouge">inner</code> function, <code class="language-plaintext highlighter-rouge">input_</code> is represented in the following format:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code></code></pre></div></div>
+<p>DecoderBlock(
+  input_norm=(4096),
+  attention=Attention(
+    q_proj=(4096, 1, 32, 128),
+    k_proj=(4096, 32, 128),
+    v_proj=(4096, 32, 128),
+    out_proj=(1, 32, 128, 4096)
+  ),
+  post_attn_norm=(4096), gate_proj=(4096, 11008),
+  up_proj=(4096, 11008), down_proj=(11008, 4096)
+)
+```</p>]]></content><author><name>Anique Tahir</name></author><summary type="html"><![CDATA[jax.lax.scan is a function which allows jit-able loops]]></summary></entry><entry><title type="html">New Blog</title><link href="https://anique.ml/blog/2022/website/" rel="alternate" type="text/html" title="New Blog" /><published>2022-08-06T00:00:00+00:00</published><updated>2022-08-06T00:00:00+00:00</updated><id>https://anique.ml/blog/2022/website</id><content type="html" xml:base="https://anique.ml/blog/2022/website/"><![CDATA[<p>Since my focus has shifted, I have decided to put down the old website. The old blog mainly consisted of 
 posts about software development and random things I was doing. I had not updated it in several years since
 my focus had shifted more towards my PhD studies. This new website will follow suit.</p>
 

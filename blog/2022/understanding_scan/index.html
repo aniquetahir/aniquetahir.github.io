@@ -211,6 +211,44 @@ The second argument is some <code class="language-plaintext highlighter-rouge">p
 
 <p>Here we used a simple example, but the scan function can be used over more complicated arguments, such as the training loop of a neural network. This makes it possible to jit compile the entire training process, resulting in a large gain in training speed.</p>
 
+<h2 id="useful-notes-on-scan-behaviour">Useful notes on scan behaviour</h2>
+<p>In jax, it is common to use <code class="language-plaintext highlighter-rouge">NamedTuple</code>s to store various things such as model parameters. The third argument of scan can be used to iterate over the batch dimension of elements in the <code class="language-plaintext highlighter-rouge">NamedTuple</code>. Here is an example. Consider a transformer decoder with 32 blocks (Llama). Parameter values may be saved in a single <code class="language-plaintext highlighter-rouge">NamedTuple</code> as follows:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DecoderBlock(
+  input_norm=(32, 4096),
+  attention=Attention(
+    q_proj=(32, 4096, 1, 32, 128),
+    k_proj=(32, 4096, 32, 128),
+    v_proj=(32, 4096, 32, 128),
+    out_proj=(32, 1, 32, 128, 4096)
+  ),
+  post_attn_norm=(32, 4096), gate_proj=(32, 4096, 11008),
+  up_proj=(32, 4096, 11008), down_proj=(32, 11008, 4096)
+)
+</code></pre></div></div>
+
+<p>The following function can be used to make in inference for each 32 subsections of the <code class="language-plaintext highlighter-rouge">DecoderBlock</code>:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">input_</span><span class="p">):</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">seq</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">subkey</span> <span class="o">=</span> <span class="nf">split_key_nullable</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">seq</span> <span class="o">=</span> <span class="nf">decoder_block</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="n">seq</span><span class="p">,</span> <span class="n">attn_mask</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">subkey</span><span class="p">,</span> <span class="n">model_config</span><span class="o">=</span><span class="n">model_config</span><span class="p">)</span>
+        <span class="nf">return </span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">seq</span><span class="p">),</span> <span class="bp">None</span>
+    <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">seq</span><span class="p">),</span> <span class="n">_</span> <span class="o">=</span> <span class="n">jax</span><span class="p">.</span><span class="n">lax</span><span class="p">.</span><span class="nf">scan</span><span class="p">(</span><span class="n">inner</span><span class="p">,</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">seq</span><span class="p">),</span> <span class="n">params</span><span class="p">)</span>
+</code></pre></div></div>
+<p>Inside the <code class="language-plaintext highlighter-rouge">inner</code> function, <code class="language-plaintext highlighter-rouge">input_</code> is represented in the following format:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code></code></pre></div></div>
+<p>DecoderBlock(
+  input_norm=(4096),
+  attention=Attention(
+    q_proj=(4096, 1, 32, 128),
+    k_proj=(4096, 32, 128),
+    v_proj=(4096, 32, 128),
+    out_proj=(1, 32, 128, 4096)
+  ),
+  post_attn_norm=(4096), gate_proj=(4096, 11008),
+  up_proj=(4096, 11008), down_proj=(11008, 4096)
+)
+```</p>
+
 
       </d-article>
 

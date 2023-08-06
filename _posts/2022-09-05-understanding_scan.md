@@ -79,15 +79,14 @@ DecoderBlock(
 
 The following function can be used to make in inference for each 32 subsections of the `DecoderBlock`:
 ```python
-    def inner(state, input_):
-        key, seq = state
-        key, subkey = split_key_nullable(key)
-        seq = decoder_block(input_, seq, attn_mask, key=subkey, model_config=model_config)
-        return (key, seq), None
-    (key, seq), _ = jax.lax.scan(inner, (key, seq), params)
+def inner(state, input_):
+    key, seq = state
+    key, subkey = split_key_nullable(key)
+    seq = decoder_block(input_, seq, attn_mask, key=subkey, model_config=model_config)
+    return (key, seq), None
+(key, seq), _ = jax.lax.scan(inner, (key, seq), params)
 ```
 Inside the `inner` function, `input_` is represented in the following format:
-```
 ```
 DecoderBlock(
   input_norm=(4096),

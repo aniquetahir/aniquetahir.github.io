@@ -61,6 +61,48 @@ Here `x` is the carry argument which is initialized to `0`. `y` is each element 
 
 Here we used a simple example, but the scan function can be used over more complicated arguments, such as the training loop of a neural network. This makes it possible to jit compile the entire training process, resulting in a large gain in training speed.
 
+## Useful notes on scan behaviour
+In jax, it is common to use `NamedTuple`s to store various things such as model parameters. The third argument of scan can be used to iterate over the batch dimension of elements in the `NamedTuple`. Here is an example. Consider a transformer decoder with 32 blocks (Llama). Parameter values may be saved in a single `NamedTuple` as follows:
+```
+DecoderBlock(
+  input_norm=(32, 4096),
+  attention=Attention(
+    q_proj=(32, 4096, 1, 32, 128),
+    k_proj=(32, 4096, 32, 128),
+    v_proj=(32, 4096, 32, 128),
+    out_proj=(32, 1, 32, 128, 4096)
+  ),
+  post_attn_norm=(32, 4096), gate_proj=(32, 4096, 11008),
+  up_proj=(32, 4096, 11008), down_proj=(32, 11008, 4096)
+)
+```
+
+The following function can be used to make in inference for each 32 subsections of the `DecoderBlock`:
+```python
+    def inner(state, input_):
+        key, seq = state
+        key, subkey = split_key_nullable(key)
+        seq = decoder_block(input_, seq, attn_mask, key=subkey, model_config=model_config)
+        return (key, seq), None
+    (key, seq), _ = jax.lax.scan(inner, (key, seq), params)
+```
+Inside the `inner` function, `input_` is represented in the following format:
+```
+```
+DecoderBlock(
+  input_norm=(4096),
+  attention=Attention(
+    q_proj=(4096, 1, 32, 128),
+    k_proj=(4096, 32, 128),
+    v_proj=(4096, 32, 128),
+    out_proj=(1, 32, 128, 4096)
+  ),
+  post_attn_norm=(4096), gate_proj=(4096, 11008),
+  up_proj=(4096, 11008), down_proj=(11008, 4096)
+)
+```
+
+
 
 
 

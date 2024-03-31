@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Debugging a Machine Learning Architecture: A Step-by-Step Guide
+title: Debugging a Machine Learning Architecture - A Step-by-Step Guide
 date: 2024-03-30 11:59:00-0400
 description: a short guide on making sure everything works out for your ML solution
 categories: machine-learning

@@ -16,47 +16,47 @@ Before diving into debugging, ensure you clearly understand the problem you're s
 
 Start with basic sanity checks:
 
-    Data Integrity: Verify your data is correctly loaded and formatted. Check for missing values, unexpected characters, or encoding issues in your dataset.
-    Model Compilation: Ensure your model compiles without errors. This includes checking the model architecture, loss functions, and optimizer settings.
-    Overfitting on a Small Dataset: Try overfitting your model on a small subset of the data. If the model can't overfit a small dataset, there might be issues with the model architecture or the data processing steps.
+Data Integrity: Verify your data is correctly loaded and formatted. Check for missing values, unexpected characters, or encoding issues in your dataset.
+Model Compilation: Ensure your model compiles without errors. This includes checking the model architecture, loss functions, and optimizer settings.
+Overfitting on a Small Dataset: Try overfitting your model on a small subset of the data. If the model can't overfit a small dataset, there might be issues with the model architecture or the data processing steps.
 
 ## Step 3: Data Processing and Feature Engineering
 
 Errors in data preprocessing or feature engineering can significantly impact model performance:
 
-    Data Normalization: Confirm that all numerical features are normalized or standardized appropriately.
-    Feature Selection: Assess whether the features used are relevant and sufficient for the model to learn the task.
-    Data Augmentation: If you're using data augmentation, ensure that the augmentations are correctly applied and don't introduce noise or irrelevant variations.
+Data Normalization: Confirm that all numerical features are normalized or standardized appropriately.
+Feature Selection: Assess whether the features used are relevant and sufficient for the model to learn the task.
+Data Augmentation: If you're using data augmentation, ensure that the augmentations are correctly applied and don't introduce noise or irrelevant variations.
 
 ## Step 4: Model Architecture
 
 The model architecture must be suitable for the task:
 
-    Layer Configuration: Check if the layers and their parameters (e.g., number of units in a dense layer, filter sizes in convolutional layers) are appropriate for your problem.
-    Activation Functions: Ensure you're using suitable activation functions. Incorrect functions (e.g., using a sigmoid function for a multi-class classification problem) can hinder model learning.
-    Regularization: If your model is overfitting, consider adding regularization methods like dropout, L1/L2 regularization, or using a simpler model architecture.
+Layer Configuration: Check if the layers and their parameters (e.g., number of units in a dense layer, filter sizes in convolutional layers) are appropriate for your problem.
+Activation Functions: Ensure you're using suitable activation functions. Incorrect functions (e.g., using a sigmoid function for a multi-class classification problem) can hinder model learning.
+Regularization: If your model is overfitting, consider adding regularization methods like dropout, L1/L2 regularization, or using a simpler model architecture.
 
 ## Step 5: Training Process
 
 The training process is crucial for model convergence:
 
-    Learning Rate: A too high or too low learning rate can cause the model to diverge or converge too slowly. Use learning rate schedules or find an optimal learning rate empirically.
-    Batch Size: Adjust the batch size if necessary. Small batches can offer more robust convergence at the cost of training stability, while large batches may be more stable but potentially less effective at finding the global minimum.
-    Epochs and Early Stopping: Ensure you're training the model for an adequate number of epochs. Implement early stopping to prevent overfitting.
+Learning Rate: A too high or too low learning rate can cause the model to diverge or converge too slowly. Use learning rate schedules or find an optimal learning rate empirically.
+Batch Size: Adjust the batch size if necessary. Small batches can offer more robust convergence at the cost of training stability, while large batches may be more stable but potentially less effective at finding the global minimum.
+Epochs and Early Stopping: Ensure you're training the model for an adequate number of epochs. Implement early stopping to prevent overfitting.
 
 ## Step 6: Evaluation and Metrics
 
 Choosing the right evaluation metrics is vital for assessing model performance:
 
-    Metric Selection: Use metrics that align with your problem's goals. For sentiment analysis, accuracy, precision, recall, and F1-score might be relevant.
-    Validation Set Performance: Monitor performance on a validation set to gauge generalization. A significant performance gap between training and validation sets indicates overfitting.
+Metric Selection: Use metrics that align with your problem's goals. For sentiment analysis, accuracy, precision, recall, and F1-score might be relevant.
+Validation Set Performance: Monitor performance on a validation set to gauge generalization. A significant performance gap between training and validation sets indicates overfitting.
 
 ## Step 7: Iterative Improvement
 
 Debugging is an iterative process:
 
-    Error Analysis: Analyze the types of errors your model is making. Are there particular classes or types of data it struggles with?
-    Model Adjustments: Based on error analysis, adjust your model. This could involve collecting more data for underrepresented classes, tweaking the architecture, or revisiting feature engineering.
+Error Analysis: Analyze the types of errors your model is making. Are there particular classes or types of data it struggles with?
+Model Adjustments: Based on error analysis, adjust your model. This could involve collecting more data for underrepresented classes, tweaking the architecture, or revisiting feature engineering.
 
 ## Conclusion
 

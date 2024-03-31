@@ -1,5 +1,63 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="https://anique.ml/feed.xml" rel="self" type="application/atom+xml" /><link href="https://anique.ml/" rel="alternate" type="text/html" hreflang="en" /><updated>2024-03-29T21:58:55+00:00</updated><id>https://anique.ml/feed.xml</id><title type="html">blank</title><subtitle>Anique&apos;s Website.
-</subtitle><entry><title type="html">Llama-2 finetuning using PEFT and Multi-GPU setup</title><link href="https://anique.ml/blog/2023/jax_lora/" rel="alternate" type="text/html" title="Llama-2 finetuning using PEFT and Multi-GPU setup" /><published>2023-12-06T15:59:00+00:00</published><updated>2023-12-06T15:59:00+00:00</updated><id>https://anique.ml/blog/2023/jax_lora</id><content type="html" xml:base="https://anique.ml/blog/2023/jax_lora/"><![CDATA[<p>ChatGPT and Gemini are great models for general prompting. However, due to model alignment, they refuse to respond to prompts related to research which involves toxic language. Llama-2 provides an open-source alternative to train an unaligned model. Thus, for one of my recent research, we needed to fine-tune a Llama-2 model. For the larger models, I also needed multi-gpu setup to fit the model in memory for training, especially due to large context sizes. However, I soon realized that open-source implementations of LoRA training implementations are limited. Multi-GPU inference on the other hand is as simple as using <code class="language-plaintext highlighter-rouge">auto</code> for the device mapping in the hugging face implementation.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="https://anique.ml/feed.xml" rel="self" type="application/atom+xml" /><link href="https://anique.ml/" rel="alternate" type="text/html" hreflang="en" /><updated>2024-03-31T03:40:41+00:00</updated><id>https://anique.ml/feed.xml</id><title type="html">blank</title><subtitle>Anique&apos;s Website.
+</subtitle><entry><title type="html"></title><link href="https://anique.ml/blog/2024/2024-03-30-model_debugging/" rel="alternate" type="text/html" title="" /><published>2024-03-31T03:40:41+00:00</published><updated>2024-03-31T03:40:41+00:00</updated><id>https://anique.ml/blog/2024/2024-03-30-model_debugging</id><content type="html" xml:base="https://anique.ml/blog/2024/2024-03-30-model_debugging/"><![CDATA[<p>Machine learning (ML) projects are inherently complex and multifaceted, often involving intricate architectures and numerous data processing steps. When an ML model doesn’t perform as expected, debugging becomes a crucial skill to identify and fix the issues. In this blog post, I’ll walk you through a comprehensive approach to debugging a machine learning architecture, using a hypothetical sentiment analysis model as an example. This model aims to classify text inputs into positive, negative, or neutral sentiments.</p>
+<h2 id="step-1-problem-definition-and-understanding">Step 1: Problem Definition and Understanding</h2>
+
+<p>Before diving into debugging, ensure you clearly understand the problem you’re solving and the expected behavior of your model. For our sentiment analysis model, define the scope of sentiments you’re classifying and the granularity of sentiment you aim to detect.</p>
+<h2 id="step-2-sanity-checks">Step 2: Sanity Checks</h2>
+
+<p>Start with basic sanity checks:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Data Integrity: Verify your data is correctly loaded and formatted. Check for missing values, unexpected characters, or encoding issues in your dataset.
+Model Compilation: Ensure your model compiles without errors. This includes checking the model architecture, loss functions, and optimizer settings.
+Overfitting on a Small Dataset: Try overfitting your model on a small subset of the data. If the model can't overfit a small dataset, there might be issues with the model architecture or the data processing steps.
+</code></pre></div></div>
+
+<h2 id="step-3-data-processing-and-feature-engineering">Step 3: Data Processing and Feature Engineering</h2>
+
+<p>Errors in data preprocessing or feature engineering can significantly impact model performance:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Data Normalization: Confirm that all numerical features are normalized or standardized appropriately.
+Feature Selection: Assess whether the features used are relevant and sufficient for the model to learn the task.
+Data Augmentation: If you're using data augmentation, ensure that the augmentations are correctly applied and don't introduce noise or irrelevant variations.
+</code></pre></div></div>
+
+<h2 id="step-4-model-architecture">Step 4: Model Architecture</h2>
+
+<p>The model architecture must be suitable for the task:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Layer Configuration: Check if the layers and their parameters (e.g., number of units in a dense layer, filter sizes in convolutional layers) are appropriate for your problem.
+Activation Functions: Ensure you're using suitable activation functions. Incorrect functions (e.g., using a sigmoid function for a multi-class classification problem) can hinder model learning.
+Regularization: If your model is overfitting, consider adding regularization methods like dropout, L1/L2 regularization, or using a simpler model architecture.
+</code></pre></div></div>
+
+<h2 id="step-5-training-process">Step 5: Training Process</h2>
+
+<p>The training process is crucial for model convergence:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Learning Rate: A too high or too low learning rate can cause the model to diverge or converge too slowly. Use learning rate schedules or find an optimal learning rate empirically.
+Batch Size: Adjust the batch size if necessary. Small batches can offer more robust convergence at the cost of training stability, while large batches may be more stable but potentially less effective at finding the global minimum.
+Epochs and Early Stopping: Ensure you're training the model for an adequate number of epochs. Implement early stopping to prevent overfitting.
+</code></pre></div></div>
+
+<h2 id="step-6-evaluation-and-metrics">Step 6: Evaluation and Metrics</h2>
+
+<p>Choosing the right evaluation metrics is vital for assessing model performance:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Metric Selection: Use metrics that align with your problem's goals. For sentiment analysis, accuracy, precision, recall, and F1-score might be relevant.
+Validation Set Performance: Monitor performance on a validation set to gauge generalization. A significant performance gap between training and validation sets indicates overfitting.
+</code></pre></div></div>
+
+<h2 id="step-7-iterative-improvement">Step 7: Iterative Improvement</h2>
+
+<p>Debugging is an iterative process:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Error Analysis: Analyze the types of errors your model is making. Are there particular classes or types of data it struggles with?
+Model Adjustments: Based on error analysis, adjust your model. This could involve collecting more data for underrepresented classes, tweaking the architecture, or revisiting feature engineering.
+</code></pre></div></div>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Debugging a machine learning model is a systematic process that requires patience and careful analysis at each step. By methodically working through each component of your ML architecture—from data preprocessing to model evaluation—you can identify bottlenecks and issues that affect performance. Remember, debugging is not just about fixing problems; it’s also an opportunity to understand your model and the problem it’s solving on a deeper level. Through this meticulous approach, you’ll enhance your model’s performance and, ultimately, its ability to solve the problem at hand.</p>]]></content><author><name></name></author></entry><entry><title type="html">Llama-2 finetuning using PEFT and Multi-GPU setup</title><link href="https://anique.ml/blog/2023/jax_lora/" rel="alternate" type="text/html" title="Llama-2 finetuning using PEFT and Multi-GPU setup" /><published>2023-12-06T15:59:00+00:00</published><updated>2023-12-06T15:59:00+00:00</updated><id>https://anique.ml/blog/2023/jax_lora</id><content type="html" xml:base="https://anique.ml/blog/2023/jax_lora/"><![CDATA[<p>ChatGPT and Gemini are great models for general prompting. However, due to model alignment, they refuse to respond to prompts related to research which involves toxic language. Llama-2 provides an open-source alternative to train an unaligned model. Thus, for one of my recent research, we needed to fine-tune a Llama-2 model. For the larger models, I also needed multi-gpu setup to fit the model in memory for training, especially due to large context sizes. However, I soon realized that open-source implementations of LoRA training implementations are limited. Multi-GPU inference on the other hand is as simple as using <code class="language-plaintext highlighter-rouge">auto</code> for the device mapping in the hugging face implementation.</p>
 
 <p>“There’s two strategies that have been shown to work: Gpipe-style model parallelism, and tensor parallelism. HF Accelerate and Deepspeed both support the former. However sadly they don’t properly support LoRA at present.” -<a href="https://www.reddit.com/r/LocalLLaMA/comments/166h6bx/model_parallelism_with_lora/jyk5q6j/">Jeremy Howard</a></p>
 

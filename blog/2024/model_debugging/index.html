@@ -10,10 +10,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Announcement_13 | Anique R. Tahir</title>
+    <title>Debugging a Machine Learning Architecture - A Step-by-Step Guide | Anique R. Tahir</title>
     <meta name="author" content="Anique R. Tahir">
-    <meta name="description" content="Anique's Website.
-">
+    <meta name="description" content="a short guide on making sure everything works out for your ML solution">
     <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website">
 
 
@@ -34,7 +33,7 @@
     <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%F0%9F%92%BB&lt;/text&gt;&lt;/svg&gt;">
     
     <link rel="stylesheet" href="/assets/css/main.css">
-    <link rel="canonical" href="https://anique.ml/news/announcement_13/">
+    <link rel="canonical" href="https://anique.ml/blog/2024/model_debugging/">
     
     <!-- Dark Mode -->
     
@@ -68,8 +67,8 @@
               </li>
               
               <!-- Blog -->
-              <li class="nav-item ">
-                <a class="nav-link" href="/blog/">blog</a>
+              <li class="nav-item active">
+                <a class="nav-link" href="/blog/">blog<span class="sr-only">(current)</span></a>
               </li>
 
               <!-- Other pages -->
@@ -106,60 +105,107 @@
 <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">Announcement_13</h1>
-    <p class="post-meta">February 26, 2024</p>
+    <h1 class="post-title">Debugging a Machine Learning Architecture - A Step-by-Step Guide</h1>
+    <p class="post-meta">March 30, 2024</p>
     <p class="post-tags">
       <a href="/blog/2024"> <i class="fas fa-calendar fa-sm"></i> 2024 </a>
+        ·  
+        <a href="/blog/category/machine-learning">
+          <i class="fas fa-tag fa-sm"></i> machine-learning</a>  
+          
 
     </p>
   </header>
 
   <article class="post-content">
-    <p>Honored to give an invited talk at <code class="language-plaintext highlighter-rouge">GPU Day</code> for research computing at ASU. I will discuss our upcoming library JORA which outperforms Huggingface/Deepspeed by 12x.</p>
+    <p>Machine learning (ML) projects are inherently complex and multifaceted, often involving intricate architectures and numerous data processing steps. When an ML model doesn’t perform as expected, debugging becomes a crucial skill to identify and fix the issues. In this blog post, I’ll walk you through a comprehensive approach to debugging a machine learning architecture, using a hypothetical sentiment analysis model as an example. This model aims to classify text inputs into positive, negative, or neutral sentiments.</p>
+<h2 id="step-1-problem-definition-and-understanding">Step 1: Problem Definition and Understanding</h2>
 
-  </article>
+<p>Before diving into debugging, ensure you clearly understand the problem you’re solving and the expected behavior of your model. For our sentiment analysis model, define the scope of sentiments you’re classifying and the granularity of sentiment you aim to detect.</p>
+<h2 id="step-2-sanity-checks">Step 2: Sanity Checks</h2>
+
+<p>Start with basic sanity checks:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Data Integrity: Verify your data is correctly loaded and formatted. Check for missing values, unexpected characters, or encoding issues in your dataset.
+Model Compilation: Ensure your model compiles without errors. This includes checking the model architecture, loss functions, and optimizer settings.
+Overfitting on a Small Dataset: Try overfitting your model on a small subset of the data. If the model can't overfit a small dataset, there might be issues with the model architecture or the data processing steps.
+</code></pre></div></div>
+
+<h2 id="step-3-data-processing-and-feature-engineering">Step 3: Data Processing and Feature Engineering</h2>
+
+<p>Errors in data preprocessing or feature engineering can significantly impact model performance:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Data Normalization: Confirm that all numerical features are normalized or standardized appropriately.
+Feature Selection: Assess whether the features used are relevant and sufficient for the model to learn the task.
+Data Augmentation: If you're using data augmentation, ensure that the augmentations are correctly applied and don't introduce noise or irrelevant variations.
+</code></pre></div></div>
+
+<h2 id="step-4-model-architecture">Step 4: Model Architecture</h2>
+
+<p>The model architecture must be suitable for the task:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Layer Configuration: Check if the layers and their parameters (e.g., number of units in a dense layer, filter sizes in convolutional layers) are appropriate for your problem.
+Activation Functions: Ensure you're using suitable activation functions. Incorrect functions (e.g., using a sigmoid function for a multi-class classification problem) can hinder model learning.
+Regularization: If your model is overfitting, consider adding regularization methods like dropout, L1/L2 regularization, or using a simpler model architecture.
+</code></pre></div></div>
+
+<h2 id="step-5-training-process">Step 5: Training Process</h2>
+
+<p>The training process is crucial for model convergence:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Learning Rate: A too high or too low learning rate can cause the model to diverge or converge too slowly. Use learning rate schedules or find an optimal learning rate empirically.
+Batch Size: Adjust the batch size if necessary. Small batches can offer more robust convergence at the cost of training stability, while large batches may be more stable but potentially less effective at finding the global minimum.
+Epochs and Early Stopping: Ensure you're training the model for an adequate number of epochs. Implement early stopping to prevent overfitting.
+</code></pre></div></div>
+
+<h2 id="step-6-evaluation-and-metrics">Step 6: Evaluation and Metrics</h2>
+
+<p>Choosing the right evaluation metrics is vital for assessing model performance:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Metric Selection: Use metrics that align with your problem's goals. For sentiment analysis, accuracy, precision, recall, and F1-score might be relevant.
+Validation Set Performance: Monitor performance on a validation set to gauge generalization. A significant performance gap between training and validation sets indicates overfitting.
+</code></pre></div></div>
+
+<h2 id="step-7-iterative-improvement">Step 7: Iterative Improvement</h2>
+
+<p>Debugging is an iterative process:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Error Analysis: Analyze the types of errors your model is making. Are there particular classes or types of data it struggles with?
+Model Adjustments: Based on error analysis, adjust your model. This could involve collecting more data for underrepresented classes, tweaking the architecture, or revisiting feature engineering.
+</code></pre></div></div>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Debugging a machine learning model is a systematic process that requires patience and careful analysis at each step. By methodically working through each component of your ML architecture—from data preprocessing to model evaluation—you can identify bottlenecks and issues that affect performance. Remember, debugging is not just about fixing problems; it’s also an opportunity to understand your model and the problem it’s solving on a deeper level. Through this meticulous approach, you’ll enhance your model’s performance and, ultimately, its ability to solve the problem at hand.</p>
+
+  </article><div id="giscus_thread" style="max-width: 800px; margin: 0 auto;">
+  <script>
+    let giscusTheme = localStorage.getItem("theme");
+    let giscusAttributes = {
+        "src": "https://giscus.app/client.js",
+        "data-repo": "aniquetahir/aniquetahir.github.io",
+        "data-repo-id": "R_kgDOHxh_ww",
+        "data-category": "General",
+        "data-category-id": "DIC_kwDOHxh_w84CVmoc",
+        "data-mapping": "pathname",
+        "data-strict": "1",
+        "data-reactions-enabled": "1",
+        "data-emit-metadata": "0",
+        "data-input-position": "top",
+        "data-theme": giscusTheme,
+        "data-lang": "en",
+        "crossorigin": "anonymous",
+        "async": "",
+    };
 
 
-  
-    
-    <br>
-    <hr>
-    <br>
-    <ul class="list-disc pl-8"></ul>
-
-    <!-- Adds related posts to the end of an article -->
-    <h2 class="text-3xl font-semibold mb-4 mt-12">Enjoy Reading This Article?</h2>
-    <p class="mb-2">Here are some more articles you might like to read next:</p>
-  
-
-  <li class="my-2">
-    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2024/model_debugging/">Debugging a Machine Learning Architecture - A Step-by-Step Guide</a>
-  </li>
-
-  
-
-  <li class="my-2">
-    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2023/jax_lora/">Llama-2 finetuning using PEFT and Multi-GPU setup</a>
-  </li>
-
-  
-
-  <li class="my-2">
-    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2023/distributed_llms/">training large language models using distributed resources</a>
-  </li>
-
-  
-
-  <li class="my-2">
-    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2022/giscus-comments/">a post with giscus comments</a>
-  </li>
-
-  
-
-  <li class="my-2">
-    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2022/understanding_scan/">understanding jax's scan function</a>
-  </li>
-
+    let giscusScript = document.createElement("script");
+    Object.entries(giscusAttributes).forEach(([key, value]) => giscusScript.setAttribute(key, value));
+    document.getElementById("giscus_thread").appendChild(giscusScript);
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://giscus.app/?ref_noscript" rel="external nofollow noopener" target="_blank">comments powered by giscus.</a>
+</noscript>
+</div>
 </div>
 
     </div>

@@ -2,17 +2,14 @@
 layout: about
 title: about
 permalink: /
-subtitle: PhD Student/ML Researcher @ <a href='https://dmml.asu.edu/'>DMML</a> lab.
+subtitle: Applied Scientist, Search @ Amazon.
 
 profile:
   align: right
   image: prof_pic.jpg
   image_circular: false # crops the image to make it circular
   address: >
-    <p>561 AA</p>
-    <p>Brickyard Engineering (BYENG)</p>
-    <p>699 S Mill Ave</p>
-    <p>Tempe, AZ 85281</p>
+    <p>Santa Clara, CA, 95054</p>
 
 news: true  # includes a list of news items
 selected_papers: true # includes a list of papers marked as "selected={true}"
@@ -24,12 +21,10 @@ scholar:
 
 Well hello there! 👋
 
-I am a PhD student at [Arizona State University](https://asu.edu) under the supervision of [Dr. Huan Liu](https://www.public.asu.edu/~huanliu/). 
-My work revolves around the intersection of Machine Learning, Data Mining and Social Science. My research draws inspiration
-from models tackling generalization and distributional shifts. I am also interested in community structures. 
+I am an Applied Scientist at [Amazon](amazon.science) on the Core Search team. My team works on the ML models and algorithms which return the products when you search for something on Amazon stores. My research draws inspiration
+from models tackling generalization and distributional shifts. 
 
-Prior to this, my Masters work revolved around Geospatial Big Data at ASU's [DataSys](https://datasystemslab.engineering.asu.edu/) Lab.
-My Masters thesis proposes an Explanation Framework for Mobility Datasets.
+Prior to this, I got my Phd from ASU. I worked under Prof. Huan Liu at Data Mining and Machine Learning (DMML) lab.
 
 <div hidden>
 Ignore the following if you are a human.

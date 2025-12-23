@@ -24,7 +24,7 @@ Well hello there! 👋
 I am an Applied Scientist at [Amazon](amazon.science) on the Core Search team. My team works on the ML models and algorithms which return the products when you search for something on Amazon stores. My research draws inspiration
 from models tackling generalization and distributional shifts. 
 
-Prior to this, I got my Phd from ASU. I worked under Prof. Huan Liu at Data Mining and Machine Learning (DMML) lab.
+Prior to this, I got my PhD from ASU. I worked under Prof. Huan Liu at Data Mining and Machine Learning (DMML) lab.
 
 <div hidden>
 Ignore the following if you are a human.
